@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Visual Memory Study</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #1a1c18;
+    --surface: #23261f;
+    --surface2: #1e2019;
+    --border: #2e3228;
+    --text: #e8e4de;
+    --muted: #7a7a6e;
+    --accent: #8fc642;
+    --accent-dark: #6da832;
+    --old-color: #8fc642;
+    --new-color: #5b9bd5;
+    --error: #e05c5c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo-badge {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+  }
+
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary { background: var(--accent); color: #1a1c18; border: none; }
+  .btn-primary:hover { background: var(--accent-dark); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  /* ─── Main ─── */
+  main { padding: 40px; max-width: 1200px; margin: 0 auto; }
+
+  /* ─── Stats row ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+
+  .stat-card .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .stat-card .lbl {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ─── Section ─── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+  }
+
+  .section-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ─── Table ─── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  thead th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  td { padding: 12px 16px; vertical-align: middle; }
+
+  td.pid {
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-old { background: rgba(143,198,66,0.15); color: var(--old-color); }
+  .badge-new { background: rgba(91,155,213,0.15); color: var(--new-color); }
+  .badge-correct { background: rgba(143,198,66,0.15); color: var(--old-color); }
+  .badge-incorrect { background: rgba(224,92,92,0.15); color: var(--error); }
+
+  .likert-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .dot.filled { background: var(--accent); }
+
+  .empty-state {
+    padding: 60px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .empty-state .big { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: var(--text); }
+
+  /* ─── Per-participant accordion ─── */
+  .participant-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .participant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .participant-header:hover { background: var(--surface2); }
+
+  .participant-header .ph-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .participant-header .pid-label {
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .participant-header .ts {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .participant-header .accuracy {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .chevron {
+    color: var(--muted);
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+  }
+
+  .participant-block.open .chevron { transform: rotate(180deg); }
+
+  .participant-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .participant-block.open .participant-body { display: block; }
+
+  .no-data {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+
+  .no-data h2 { font-family: 'DM Serif Display', serif; color: var(--text); font-size: 1.5rem; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-badge">Admin</div>
+    <div>
+      <h1>Experiment Dashboard</h1>
+    </div>
+  </div>
+  <div class="header-actions">
+    {% if results %}
+    <a href="/admin/download" class="btn btn-primary">⬇ Download CSV</a>
+    {% endif %}
+    <a href="/admin/logout" class="btn btn-ghost">Sign Out</a>
+  </div>
+</div>
+
+<main>
+  {% if not results %}
+  <div class="no-data">
+    <h2>No Data Yet</h2>
+    <p>Results will appear here once participants complete the experiment.</p>
+  </div>
+  {% else %}
+
+  <!-- Stats -->
+  {% set total_responses = namespace(n=0) %}
+  {% set correct = namespace(n=0) %}
+  {% for r in results %}
+    {% for rnd in r.rounds %}
+      {% set total_responses.n = total_responses.n + 1 %}
+      {# Count as "correct" if old image → response 1 or 2; new image → response 4 or 5 #}
+      {% if rnd.test_is_old and rnd.response in [1,2] %}
+        {% set correct.n = correct.n + 1 %}
+      {% elif not rnd.test_is_old and rnd.response in [4,5] %}
+        {% set correct.n = correct.n + 1 %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="val">{{ results|length }}</span>
+      <span class="lbl">Participants</span>
+    </div>
+    <div class="stat-card">
+      <span class="val">{{ total_responses.n }}</span>
+      <span class="lbl">Total Responses</span>
+    </div>
+    <div class="stat-card">
+      <span class="val">{% if total_responses.n > 0 %}{{ (correct.n / total_responses.n * 100)|round(1) }}%{% else %}—{% endif %}</span>
+      <span class="lbl">Recognition Accuracy</span>
+    </div>
+    <div class="stat-card">
+      <span class="val">4</span>
+      <span class="lbl">Rounds / Participant</span>
+    </div>
+  </div>
+
+  <!-- Per-participant results -->
+  <div class="section-header">
+    <div>
+      <h2>Participant Results</h2>
+      <div class="section-sub">Click a participant to expand round details</div>
+    </div>
+  </div>
+
+  {% for r in results %}
+  {% set p_correct = namespace(n=0) %}
+  {% set p_total = namespace(n=0) %}
+  {% for rnd in r.rounds %}
+    {% set p_total.n = p_total.n + 1 %}
+    {% if rnd.test_is_old and rnd.response in [1,2] %}{% set p_correct.n = p_correct.n + 1 %}{% endif %}
+    {% if not rnd.test_is_old and rnd.response in [4,5] %}{% set p_correct.n = p_correct.n + 1 %}{% endif %}
+  {% endfor %}
+
+  <div class="participant-block" onclick="toggleBlock(this)">
+    <div class="participant-header">
+      <div class="ph-left">
+        <span class="pid-label">PID #{{ r.participant_id }}</span>
+        <span class="ts">{{ r.timestamp[:19].replace('T', ' ') }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <span class="accuracy">{{ p_correct.n }}/{{ p_total.n }} correct</span>
+        <span class="chevron">▼</span>
+      </div>
+    </div>
+    <div class="participant-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Round</th>
+            <th>Duration (ms)</th>
+            <th>Test Image</th>
+            <th>Ground Truth</th>
+            <th>Response (1–5)</th>
+            <th>Accuracy</th>
+            <th>Study Images</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rnd in r.rounds %}
+          {% set is_correct = (rnd.test_is_old and rnd.response in [1,2]) or (not rnd.test_is_old and rnd.response in [4,5]) %}
+          <tr>
+            <td>{{ rnd.round }}</td>
+            <td>{{ rnd.duration_ms }}</td>
+            <td style="font-size:0.8rem;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ rnd.test_image }}</td>
+            <td>
+              {% if rnd.test_is_old %}
+                <span class="badge badge-old">Old</span>
+              {% else %}
+                <span class="badge badge-new">New</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="likert-dots">
+                {% for i in range(1,6) %}
+                <div class="dot {% if i <= rnd.response %}filled{% endif %}"></div>
+                {% endfor %}
+                <span style="margin-left:6px;font-size:0.85rem;color:var(--muted);">{{ rnd.response }}</span>
+              </div>
+            </td>
+            <td>
+              {% if is_correct %}
+                <span class="badge badge-correct">✓ Correct</span>
+              {% else %}
+                <span class="badge badge-incorrect">✗ Incorrect</span>
+              {% endif %}
+            </td>
+            <td style="font-size:0.75rem;color:var(--muted);">
+              {% if rnd.study_sequence %}
+                {{ rnd.study_sequence|length }} images
+                ({% for s in rnd.study_sequence %}{{ 'C' if s.color else 'BW' }}{% if not loop.last %},{% endif %}{% endfor %})
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% endif %}
+</main>
+
+<script>
+function toggleBlock(el) {
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
