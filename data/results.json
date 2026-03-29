@@ -402,5 +402,207 @@
         "test_is_old": false
       }
     ]
+  },
+  {
+    "participant_id": 2,
+    "timestamp": "2026-03-28T23:31:56.145000",
+    "rounds": [
+      {
+        "duration_ms": 1520,
+        "response": 4,
+        "round": 1,
+        "study_sequence": [
+          {
+            "color": false,
+            "image": "bw (25).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (24).jpeg"
+          },
+          {
+            "color": false,
+            "image": "avocado-toast-20-1200.jpg"
+          },
+          {
+            "color": true,
+            "image": "acai bowl.jpg"
+          },
+          {
+            "color": true,
+            "image": "bakedpopta.jpeg"
+          },
+          {
+            "color": true,
+            "image": "deviled eggs.webp"
+          },
+          {
+            "color": true,
+            "image": "bw (26).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (10).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (4).jpg"
+          },
+          {
+            "color": true,
+            "image": "EWL-Chopped-Greek-Salad-Chicken-1x1-086-09a1b3a5b6d343099fea5a60358dfa76.jpg"
+          }
+        ],
+        "test_image": "bw (26).jpeg",
+        "test_is_old": true
+      },
+      {
+        "duration_ms": 1020,
+        "response": 4,
+        "round": 2,
+        "study_sequence": [
+          {
+            "color": false,
+            "image": "clemetine.jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (6).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (13).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (6).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (22).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (19).jpg"
+          },
+          {
+            "color": false,
+            "image": "watermelon.webp"
+          },
+          {
+            "color": false,
+            "image": "granola bar.jpeg"
+          },
+          {
+            "color": false,
+            "image": "fries.jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (6).png"
+          }
+        ],
+        "test_image": "yogurt.jpg",
+        "test_is_old": false
+      },
+      {
+        "duration_ms": 520,
+        "response": 2,
+        "round": 3,
+        "study_sequence": [
+          {
+            "color": false,
+            "image": "Nacho-Pizza-Recipe.jpg"
+          },
+          {
+            "color": false,
+            "image": "Roast-Beef-Rollups-683x1024.jpg"
+          },
+          {
+            "color": true,
+            "image": "tuna.jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (4).png"
+          },
+          {
+            "color": true,
+            "image": "hame.jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (5).png"
+          },
+          {
+            "color": false,
+            "image": "coconut.jpeg"
+          },
+          {
+            "color": false,
+            "image": "chciekn.jpeg"
+          },
+          {
+            "color": false,
+            "image": "Steel-Cut-Oatmeal-09.jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (8).jpg"
+          }
+        ],
+        "test_image": "Roast-Beef-Rollups-683x1024.jpg",
+        "test_is_old": true
+      },
+      {
+        "duration_ms": 20,
+        "response": 3,
+        "round": 4,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (27).jpeg"
+          },
+          {
+            "color": true,
+            "image": "steak.jpeg"
+          },
+          {
+            "color": true,
+            "image": "tropical-fruit-salad-square-500x500.webp"
+          },
+          {
+            "color": false,
+            "image": "takis.jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (19).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (15).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (14).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (20).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (4).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (12).jpeg"
+          }
+        ],
+        "test_image": "bw (12).jpeg",
+        "test_is_old": true
+      }
+    ]
   }
 ]
