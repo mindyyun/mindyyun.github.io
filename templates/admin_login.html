@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Visual Memory Study</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+  :root {
+    --bg: #1a1c18; --surface: #23261f; --border: #2e3228; --text: #e8e4de;
+    --muted: #7a7a6e; --accent: #8fc642; --accent-dark: #6da832; --error: #e05c5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; font-weight: 300; padding: 20px;
+  }
+  .static-warning {
+    display: none; max-width: 480px; width: 100%;
+    background: rgba(255,180,0,0.08); border: 1px solid rgba(255,180,0,0.25);
+    border-radius: 12px; padding: 20px 24px; color: #f0c040;
+    font-size: 0.875rem; line-height: 1.7;
+  }
+  .static-warning strong { font-weight: 500; display: block; margin-bottom: 6px; font-size: 1rem; }
+  .static-warning code {
+    background: rgba(255,255,255,0.08); padding: 2px 8px;
+    border-radius: 4px; font-family: monospace; font-size: 0.85rem;
+  }
+  .login-box {
+    width: 100%; max-width: 380px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px; padding: 44px 40px;
+  }
+  .admin-badge {
+    display: inline-block; font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent);
+    padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 24px;
+  }
+  h1 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 6px; line-height: 1.2; }
+  .sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 36px; }
+  label {
+    display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; margin-bottom: 8px;
+  }
+  input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s; margin-bottom: 20px;
+  }
+  input:focus { border-color: var(--accent); }
+  .error-msg {
+    background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.3);
+    border-radius: 8px; padding: 10px 14px; color: var(--error);
+    font-size: 0.85rem; margin-bottom: 20px;
+  }
+  button[type="submit"] {
+    width: 100%; background: var(--accent); color: #1a1c18; border: none;
+    border-radius: 8px; padding: 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 500; cursor: pointer;
+    transition: background 0.2s; letter-spacing: 0.02em;
+  }
+  button[type="submit"]:hover { background: var(--accent-dark); }
+  .back-link {
+    font-size: 0.8rem; color: var(--muted); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="static-warning" id="static-warning">
+  <strong>&#9888; This page requires the Flask server to be running.</strong>
+  You are viewing this HTML file directly in your browser &mdash; the login form will not work without the backend.<br><br>
+  To use the admin portal:<br>
+  1. Open a terminal in your project folder<br>
+  2. Run <code>python app.py</code><br>
+  3. Visit <code>http://localhost:5000/admin</code>
+</div>
+<div class="login-box" id="login-box">
+  <div class="admin-badge">Admin Portal</div>
+  <h1>Researcher<br>Access</h1>
+  <p class="sub">Visual Memory &amp; Food Imagery Study</p>
+  {% if error %}
+  <div class="error-msg">{{ error }}</div>
+  {% endif %}
+  <form method="POST" id="login-form">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" autocomplete="off" required>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Sign In &rarr;</button>
+  </form>
+</div>
+<a href="/" class="back-link">&#8592; Back to experiment</a>
+<script>
+  // Detect if Jinja hasn't rendered (raw file open)
+  // We check if the URL looks like a file:// path
+  if (window.location.protocol === 'file:') {
+    document.getElementById('static-warning').style.display = 'block';
+    document.getElementById('login-box').style.display = 'none';
+  }
+</script>
+</body>
+</html>

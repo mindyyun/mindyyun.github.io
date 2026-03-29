@@ -1,0 +1,406 @@
+[
+  {
+    "participant_id": 0,
+    "timestamp": "2026-03-28T22:42:11.360215",
+    "rounds": [
+      {
+        "duration_ms": 20,
+        "response": 2,
+        "round": 1,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (24).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (6).png"
+          },
+          {
+            "color": true,
+            "image": "bw (15).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (13).jpeg"
+          },
+          {
+            "color": true,
+            "image": "dimsumj.jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (21).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (25).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (15).jpeg"
+          },
+          {
+            "color": false,
+            "image": "baklava.jpg"
+          },
+          {
+            "color": true,
+            "image": "lasang.jpg"
+          }
+        ],
+        "test_image": "bw (4).jpeg",
+        "test_is_old": false
+      },
+      {
+        "duration_ms": 1520,
+        "response": 3,
+        "round": 2,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "chciekn.jpeg"
+          },
+          {
+            "color": true,
+            "image": "steak.jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (23).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (4).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (5).jpg"
+          },
+          {
+            "color": false,
+            "image": "tacos.jpg"
+          },
+          {
+            "color": false,
+            "image": "whitechoco.jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (12).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (1).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (3).jpg"
+          }
+        ],
+        "test_image": "bw (3).jpg",
+        "test_is_old": true
+      },
+      {
+        "duration_ms": 1020,
+        "response": 4,
+        "round": 3,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "kebab.jpeg"
+          },
+          {
+            "color": true,
+            "image": "chichen alfred.jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (11).jpg"
+          },
+          {
+            "color": false,
+            "image": "deviled eggs.webp"
+          },
+          {
+            "color": true,
+            "image": "bacon.jpeg"
+          },
+          {
+            "color": true,
+            "image": "tropical-fruit-salad-square-500x500.webp"
+          },
+          {
+            "color": true,
+            "image": "bw (28).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (9).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (7).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (16).jpg"
+          }
+        ],
+        "test_image": "bell peppers.webp",
+        "test_is_old": false
+      },
+      {
+        "duration_ms": 520,
+        "response": 4,
+        "round": 4,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (2).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (17).jpg"
+          },
+          {
+            "color": true,
+            "image": "Teriyaki-Chicken-main.webp"
+          },
+          {
+            "color": true,
+            "image": "bakedpopta.jpeg"
+          },
+          {
+            "color": false,
+            "image": "ribs.jpeg"
+          },
+          {
+            "color": false,
+            "image": "srimp.jpeg"
+          },
+          {
+            "color": true,
+            "image": "Roast-Beef-Rollups-683x1024.jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (27).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (10).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (11).jpeg"
+          }
+        ],
+        "test_image": "bw (4).jpg",
+        "test_is_old": false
+      }
+    ]
+  },
+  {
+    "participant_id": 1,
+    "timestamp": "2026-03-28T23:10:59.824309",
+    "rounds": [
+      {
+        "duration_ms": 520,
+        "response": 4,
+        "round": 1,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (7).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (1).jpeg"
+          },
+          {
+            "color": false,
+            "image": "sausge.jpeg"
+          },
+          {
+            "color": false,
+            "image": "Roast-Beef-Rollups-683x1024.jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (28).jpeg"
+          },
+          {
+            "color": true,
+            "image": "burrito.jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (13).jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (22).jpg"
+          },
+          {
+            "color": false,
+            "image": "tacos.jpg"
+          },
+          {
+            "color": false,
+            "image": "nachos.jpeg"
+          }
+        ],
+        "test_image": "Steel-Cut-Oatmeal-09.jpg",
+        "test_is_old": false
+      },
+      {
+        "duration_ms": 1520,
+        "response": 2,
+        "round": 2,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (10).jpg"
+          },
+          {
+            "color": false,
+            "image": "barrel of apples.jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (17).jpg"
+          },
+          {
+            "color": true,
+            "image": "mango.webp"
+          },
+          {
+            "color": true,
+            "image": "Nacho-Pizza-Recipe.jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (9).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (7).png"
+          },
+          {
+            "color": true,
+            "image": "bw (8).jpg"
+          },
+          {
+            "color": false,
+            "image": "EWL-Chopped-Greek-Salad-Chicken-1x1-086-09a1b3a5b6d343099fea5a60358dfa76.jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (16).jpg"
+          }
+        ],
+        "test_image": "bw (16).jpg",
+        "test_is_old": true
+      },
+      {
+        "duration_ms": 1020,
+        "response": 4,
+        "round": 3,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "images.jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (13).jpeg"
+          },
+          {
+            "color": false,
+            "image": "bw (8).png"
+          },
+          {
+            "color": true,
+            "image": "thai food.webp"
+          },
+          {
+            "color": true,
+            "image": "corndog.jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (19).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (15).jpg"
+          },
+          {
+            "color": true,
+            "image": "casserole.jpg"
+          },
+          {
+            "color": false,
+            "image": "baklava.jpg"
+          },
+          {
+            "color": true,
+            "image": "avocado-toast-20-1200.jpg"
+          }
+        ],
+        "test_image": "rice.jpeg",
+        "test_is_old": false
+      },
+      {
+        "duration_ms": 20,
+        "response": 4,
+        "round": 4,
+        "study_sequence": [
+          {
+            "color": true,
+            "image": "bw (23).jpeg"
+          },
+          {
+            "color": true,
+            "image": "bw (26).jpeg"
+          },
+          {
+            "color": true,
+            "image": "m and m_s.jpg"
+          },
+          {
+            "color": true,
+            "image": "bell peppers.webp"
+          },
+          {
+            "color": false,
+            "image": "bw (6).png"
+          },
+          {
+            "color": true,
+            "image": "bw (2).png"
+          },
+          {
+            "color": false,
+            "image": "bw (7).jpg"
+          },
+          {
+            "color": false,
+            "image": "bw (3).png"
+          },
+          {
+            "color": false,
+            "image": "acai bowl.jpg"
+          },
+          {
+            "color": true,
+            "image": "bw (19).jpeg"
+          }
+        ],
+        "test_image": "eggroll.jpeg",
+        "test_is_old": false
+      }
+    ]
+  }
+]
