@@ -7,13 +7,14 @@ import random
 import glob
 from datetime import datetime
 from functools import wraps
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import urllib.parse
 
 app = Flask(__name__)
-app.secret_key = 'psych_experiment_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'psych_experiment_secret_key_2024')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE = os.path.join(BASE_DIR, 'data', 'results.json')
-COUNTER_FILE = os.path.join(BASE_DIR, 'data', 'counter.json')
 IMAGES_DIR = os.path.join(BASE_DIR, 'static', 'images')
 
 ADMIN_USER = 'bestiewestie'
@@ -23,41 +24,151 @@ ROUND_DURATIONS = [1520, 1020, 520, 20]  # fixed order: longest to shortest
 PHOTOS_PER_ROUND = 10
 BLANK_DURATION = 500  # ms neutral blank between photos
 
-os.makedirs(os.path.join(BASE_DIR, 'data'), exist_ok=True)
+# ─── Database ─────────────────────────────────────────────────────────────────
+
+def get_db():
+    """Open a new database connection using the DATABASE_URL environment variable."""
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        raise RuntimeError("DATABASE_URL environment variable is not set.")
+    # Render provides postgres:// but psycopg2 needs postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+
+def init_db():
+    """Create tables if they don't exist yet."""
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS participants (
+                    id          SERIAL PRIMARY KEY,
+                    pid         INTEGER UNIQUE NOT NULL,
+                    timestamp   TIMESTAMP NOT NULL DEFAULT NOW()
+                );
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS responses (
+                    id              SERIAL PRIMARY KEY,
+                    pid             INTEGER NOT NULL REFERENCES participants(pid),
+                    round           INTEGER,
+                    duration_ms     INTEGER,
+                    test_image      TEXT,
+                    test_is_old     BOOLEAN,
+                    likert_response INTEGER,
+                    study_sequence  JSONB,
+                    created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+                );
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS pid_counter (
+                    id      INTEGER PRIMARY KEY DEFAULT 1,
+                    counter INTEGER NOT NULL DEFAULT 0,
+                    CHECK (id = 1)
+                );
+            """)
+            # Ensure the single counter row exists
+            cur.execute("""
+                INSERT INTO pid_counter (id, counter)
+                VALUES (1, 0)
+                ON CONFLICT (id) DO NOTHING;
+            """)
+        conn.commit()
+    finally:
+        conn.close()
 
 def get_next_participant_id():
-    if not os.path.exists(COUNTER_FILE):
-        with open(COUNTER_FILE, 'w') as f:
-            json.dump({'counter': 0}, f)
-        return 0
-    with open(COUNTER_FILE, 'r') as f:
-        data = json.load(f)
-    pid = data['counter']
-    data['counter'] += 1
-    with open(COUNTER_FILE, 'w') as f:
-        json.dump(data, f)
-    return pid
+    """Atomically increment and return the next participant ID."""
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE pid_counter SET counter = counter + 1
+                WHERE id = 1
+                RETURNING counter - 1 AS pid;
+            """)
+            row = cur.fetchone()
+        conn.commit()
+        return row['pid']
+    finally:
+        conn.close()
+
+def save_result(participant_id, round_results):
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO participants (pid, timestamp) VALUES (%s, %s) ON CONFLICT (pid) DO NOTHING;",
+                (participant_id, datetime.now())
+            )
+            for rnd in round_results:
+                cur.execute("""
+                    INSERT INTO responses
+                        (pid, round, duration_ms, test_image, test_is_old, likert_response, study_sequence)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
+                """, (
+                    participant_id,
+                    rnd.get('round'),
+                    rnd.get('duration_ms'),
+                    rnd.get('test_image'),
+                    rnd.get('test_is_old'),
+                    rnd.get('response'),
+                    json.dumps(rnd.get('study_sequence', []))
+                ))
+        conn.commit()
+    finally:
+        conn.close()
+
+def load_all_results():
+    """Return all results grouped by participant, same shape as the old JSON format."""
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT pid, timestamp FROM participants ORDER BY pid;")
+            participants = cur.fetchall()
+
+            results = []
+            for p in participants:
+                cur.execute("""
+                    SELECT round, duration_ms, test_image, test_is_old,
+                           likert_response AS response, study_sequence
+                    FROM responses WHERE pid = %s ORDER BY round;
+                """, (p['pid'],))
+                rounds_raw = cur.fetchall()
+                rounds = []
+                for r in rounds_raw:
+                    seq = r['study_sequence']
+                    if isinstance(seq, str):
+                        seq = json.loads(seq)
+                    rounds.append({
+                        'round': r['round'],
+                        'duration_ms': r['duration_ms'],
+                        'test_image': r['test_image'],
+                        'test_is_old': r['test_is_old'],
+                        'response': r['response'],
+                        'study_sequence': seq or []
+                    })
+                results.append({
+                    'participant_id': p['pid'],
+                    'timestamp': p['timestamp'].isoformat() if p['timestamp'] else '',
+                    'rounds': rounds
+                })
+        return results
+    finally:
+        conn.close()
+
+# ─── Experiment logic ──────────────────────────────────────────────────────────
 
 def get_all_images():
     extensions = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp']
     images = []
     for ext in extensions:
         images.extend(glob.glob(os.path.join(IMAGES_DIR, ext)))
-    images = [os.path.basename(f) for f in images]
-    return images
+    return [os.path.basename(f) for f in images]
 
 def build_experiment(all_images):
-    """
-    Build 4 rounds. Each round: 10 study images (mix of color/BW) shown at round duration,
-    then 1 test image (old or new) rated on Likert scale.
-    Returns the full experiment structure.
-    """
-    if len(all_images) < 40 + 4:
-        # If fewer images, reuse with caution
-        pool = all_images[:]
-    else:
-        pool = all_images[:]
-
+    pool = all_images[:]
     random.shuffle(pool)
 
     rounds = []
@@ -65,7 +176,6 @@ def build_experiment(all_images):
     durations = ROUND_DURATIONS[:]  # fixed order: 1520, 1020, 520, 20 ms
 
     for r in range(4):
-        # Pick 10 study images
         study_images = []
         for i in range(PHOTOS_PER_ROUND):
             if not pool:
@@ -75,18 +185,15 @@ def build_experiment(all_images):
             study_images.append(img)
             used_study.append(img)
 
-        # Each study image: randomly color or BW
-        study_sequence = []
-        for img in study_images:
-            is_color = random.choice([True, False])
-            study_sequence.append({'image': img, 'color': is_color})
+        study_sequence = [
+            {'image': img, 'color': random.choice([True, False])}
+            for img in study_images
+        ]
 
-        # Test image: 50% chance old (from this round's study), 50% new
         is_old = random.choice([True, False])
         if is_old and study_images:
             test_image = random.choice(study_images)
         else:
-            # Pick a new image not in used_study
             remaining = [img for img in all_images if img not in used_study]
             if remaining:
                 test_image = random.choice(remaining)
@@ -106,19 +213,6 @@ def build_experiment(all_images):
 
     return rounds
 
-def save_result(participant_id, round_results):
-    results = []
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            results = json.load(f)
-    results.append({
-        'participant_id': participant_id,
-        'timestamp': datetime.now().isoformat(),
-        'rounds': round_results
-    })
-    with open(DATA_FILE, 'w') as f:
-        json.dump(results, f, indent=2)
-
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -137,7 +231,7 @@ def index():
 def start():
     all_images = get_all_images()
     if not all_images:
-        return jsonify({'error': 'No images found. Please add images to static/images/'}), 400
+        return jsonify({'error': 'No images found in static/images/'}), 400
 
     pid = get_next_participant_id()
     experiment = build_experiment(all_images)
@@ -156,11 +250,11 @@ def submit_response():
 
     responses = session.get('responses', [])
     responses.append({
-        'round': data.get('round'),
-        'duration_ms': data.get('duration_ms'),
-        'test_image': data.get('test_image'),
-        'test_is_old': data.get('test_is_old'),
-        'response': data.get('response'),  # 1-5 Likert
+        'round':        data.get('round'),
+        'duration_ms':  data.get('duration_ms'),
+        'test_image':   data.get('test_image'),
+        'test_is_old':  data.get('test_is_old'),
+        'response':     data.get('response'),
         'study_sequence': data.get('study_sequence')
     })
     session['responses'] = responses
@@ -190,12 +284,8 @@ def admin_login():
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
-    results = []
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            results = json.load(f)
+    results = load_all_results()
 
-    # Pre-compute stats in Python so template stays simple
     total_responses = 0
     total_correct = 0
     enriched = []
@@ -229,10 +319,7 @@ def admin_dashboard():
 @app.route('/admin/download')
 @admin_required
 def admin_download():
-    results = []
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            results = json.load(f)
+    results = load_all_results()
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -241,23 +328,19 @@ def admin_download():
         'test_image', 'test_is_old', 'likert_response',
         'study_images', 'color_sequence'
     ])
-
     for r in results:
-        pid = r['participant_id']
-        ts = r['timestamp']
         for rnd in r.get('rounds', []):
             study_seq = rnd.get('study_sequence', [])
-            study_imgs = '|'.join([s['image'] for s in study_seq])
-            color_seq = '|'.join(['color' if s['color'] else 'bw' for s in study_seq])
             writer.writerow([
-                pid, ts,
+                r['participant_id'],
+                r['timestamp'],
                 rnd.get('round'),
                 rnd.get('duration_ms'),
                 rnd.get('test_image'),
                 rnd.get('test_is_old'),
                 rnd.get('response'),
-                study_imgs,
-                color_seq
+                '|'.join(s['image'] for s in study_seq),
+                '|'.join('color' if s['color'] else 'bw' for s in study_seq)
             ])
 
     output.seek(0)
@@ -272,7 +355,17 @@ def admin_logout():
     session.pop('admin_logged_in', None)
     return redirect(url_for('admin_login'))
 
+# ─── Startup ──────────────────────────────────────────────────────────────────
+
+# Initialise DB tables on first boot (safe to call repeatedly)
+with app.app_context():
+    try:
+        init_db()
+    except Exception as e:
+        print(f"[WARNING] Could not initialise database: {e}")
+        print("Set the DATABASE_URL environment variable to enable persistent storage.")
+
 if __name__ == '__main__':
     from waitress import serve
-    print('Starting server at http://localhost:5000')
+    print('Starting server at http://0.0.0.0:5000')
     serve(app, host='0.0.0.0', port=5000, threads=16)
